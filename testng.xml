@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE suite SYSTEM
+        "https://testng.org/testng-1.0.dtd">
+
+<suite name="OpenCart Suite"
+       parallel="classes"
+       thread-count="4">
+
+    <listeners>
+        <listener class-name="com.opencart.automation.listners.TestListener"/>
+    </listeners>
+
+    <test name="OpenCart Tests">
+
+        <classes>
+            <class name="com.opencart.automation.tests.LoginPageTest"/>
+            <class name="com.opencart.automation.tests.LoginDataDrivenTest"/>
+            <class name="com.opencart.automation.tests.ProductPageTest"/>
+            <class name="com.opencart.automation.tests.DBTest"/>
+        </classes>
+
+    </test>
+
+</suite>
