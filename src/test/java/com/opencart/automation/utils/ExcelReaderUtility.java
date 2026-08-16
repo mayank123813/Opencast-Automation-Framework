@@ -1,26 +1,20 @@
 package com.opencart.automation.utils;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
-
 import java.io.FileInputStream;
 import java.io.IOException;
-
 public class ExcelReaderUtility {
-
     private static final Logger logger =
             LogManager.getLogger(ExcelReaderUtility.class);
 
     public static Object[][] getExcelData(
             String path,
             String sheetName) throws IOException {
-
         logger.info(
                 "Reading Excel test data from file: {}",
                 path
         );
-
         logger.info(
                 "Reading sheet: {}",
                 sheetName
@@ -33,10 +27,8 @@ public class ExcelReaderUtility {
                 Workbook workbook =
                         WorkbookFactory.create(fis)
         ) {
-
             Sheet sheet =
                     workbook.getSheet(sheetName);
-
             if (sheet == null) {
 
                 logger.error(
@@ -83,11 +75,9 @@ public class ExcelReaderUtility {
                     }
                 }
             }
-
             logger.info(
                     "Excel test data read successfully"
             );
-
             return data;
         }
     }

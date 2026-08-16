@@ -65,3 +65,85 @@ Example:
 ```java
 WebDriverFactory factory = new WebDriverFactory();
 WebDriver driver = factory.getBrowser("chrome");
+
+Opencast-Automation-Framework/
+│
+├── .idea/                           # IDE configurations
+├── test-output/                     # Test execution outputs & artifacts
+│   └── screenshots/                 # Captured failure screenshots (e.g., test.png)
+│
+├── src/
+│   └── test/
+│       ├── java/com/opencart/automation/
+│       │   ├── base/                # Base setup & teardown
+│       │   │   └── BaseTest.java
+│       │   │
+│       │   ├── factory/             # Driver initialization & management
+│       │   │   └── WebDriverFactory.java
+│       │   │
+│       │   ├── pages/               # Page Object Model (POM) layer
+│       │   │   ├── BasePage.java
+│       │   │   ├── HomePage.java
+│       │   │   ├── LoginPage.java
+│       │   │   └── ProductPage.java
+│       │   │
+│       │   ├── tests/               # Test execution classes
+│       │   │   ├── DBTest.java
+│       │   │   ├── LoginDataDrivenTest.java
+│       │   │   ├── LoginPageTest.java
+│       │   │   └── ProductPageTest.java
+│       │   │
+│       │   ├── data/                # Data Providers for TestNG
+│       │   │   └── TestDataProvider.java
+│       │   │
+│       │   ├── listners/            # TestNG Listeners for logging & reporting
+│       │   │   └── TestListener.java
+│       │   │
+│       │   └── utils/               # Helper utilities
+│       │       ├── ConfigLoader.java
+│       │       ├── DbUtils.java
+│       │       ├── ExcelReaderUtility.java
+│       │       └── ExtentManager.java
+│       │
+│       └── resources/               # Configurations & static test data
+│           ├── testdata/
+│           │   └── TestData.xlsx    # Excel test data source
+│           ├── config.properties    # Environment & global settings
+│           └── log4j2.xml           # Logging configuration
+│
+├── pom.xml                          # Maven dependencies & build management
+└── testng.xml                       # Test suite runner & execution configuration
+
+
++-----------------------+
+                     |      testng.xml       |
+                     +-----------+-----------+
+                                 |
+                                 v
+                     +-----------------------+
+                     |    Test Execution     |
+                     |     (*Test.java)      |
+                     +-----------+-----------+
+                                 |
+        +------------------------+------------------------+
+        |                        |                        |
+        v                        v                        v
++---------------+        +---------------+        +---------------+
+|  BaseTest     |        |  Data Layer   |        |  Page Objects |
+|  (Setup/      |        | (Excel, DB,   |        |  (BasePage,   |
+|   Teardown)   |        | DataProvider) |        |   Pages)      |
++-------+-------+        +---------------+        +-------+-------+
+        |                                                 |
+        v                                                 v
++---------------+                                 +---------------+
+| Driver Factory|                                 | Web Elements  |
+| (WebDriver)   |                                 | & Actions     |
++-------+-------+                                 +-------+-------+
+        |                                                 |
+        +------------------------+------------------------+
+                                 |
+                                 v
+                     +-----------------------+
+                     |  Reporting & Logging  |
+                     |  (Extent, Log4j2,     |
+                     |   TestListener)       |
