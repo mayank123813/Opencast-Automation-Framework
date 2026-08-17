@@ -26,9 +26,5 @@ public class ProductPageTest extends BaseTest {
         productPage.clickBack();
         Assert.assertTrue(productPage.verifyProductNameEdited(updated));
 
-
-
-
-
     }
 }

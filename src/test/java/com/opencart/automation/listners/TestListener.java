@@ -2,13 +2,21 @@ package com.opencart.automation.listners;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.opencart.automation.base.BaseTest;
 import com.opencart.automation.utils.ExtentManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+
+import java.io.File;
+import java.io.IOException;
 
 public class TestListener implements ITestListener {
 
@@ -50,6 +58,17 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
+        WebDriver driver = ((BaseTest)result.getInstance()).getDriver();
+
+        TakesScreenshot ts = (TakesScreenshot)driver;
+        File src=ts.getScreenshotAs(OutputType.FILE);
+        File des=new File("test-output/screenshots/"+result.getName()+".png");
+        try {
+            FileUtils.copyFile(src,des);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         extentTest.get().fail(
                 result.getThrowable()
