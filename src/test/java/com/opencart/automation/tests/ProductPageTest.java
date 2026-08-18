@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 public class ProductPageTest extends BaseTest {
 
-    @Test
+    @Test(groups ={"sanity","regression"})
     public void checkProductNameChanged(){
         LoginPage loginPage=new LoginPage(driver);
         HomePage homePage=loginPage.login(ConfigLoader.getProperty("username"),ConfigLoader.getProperty("password"));

@@ -65,8 +65,10 @@ public class TestListener implements ITestListener {
         File des=new File("test-output/screenshots/"+result.getName()+".png");
         try {
             FileUtils.copyFile(src,des);
+            extentTest.get().addScreenCaptureFromPath(
+                    des.getPath());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("unable to capture screenshot");
         }
 
 

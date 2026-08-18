@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class DBTest extends BaseTest {
 
-    @Test
+    @Test(groups = {"sanity","regression"})
     public void checkUIAndDBInputMatch() throws SQLException {
         int productId=42;
 

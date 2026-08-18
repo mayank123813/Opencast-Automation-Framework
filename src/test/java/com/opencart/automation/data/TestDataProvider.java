@@ -11,7 +11,6 @@ public class TestDataProvider {
     @DataProvider(name = "loginData")
     public Object[][] loginDta() throws IOException {
 
-        System.out.println(ConfigLoader.getProperty("excel"));
 
         return ExcelReaderUtility.getExcelData(
                 "src/test/resources/testdata/TestData.xlsx",

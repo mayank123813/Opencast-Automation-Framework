@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 public class LoginPageTest extends BaseTest {
 
-    @Test
+    @Test(groups = {"smoke"})
     public void login(){
         LoginPage loginPage=new LoginPage(driver);
         HomePage homePage=loginPage.login(ConfigLoader.getProperty("username"),ConfigLoader.getProperty("password"));

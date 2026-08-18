@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 public class LoginDataDrivenTest extends BaseTest {
 
-    @Test(dataProvider = "loginData",dataProviderClass = TestDataProvider.class)
+    @Test(groups = {"sanity"},dataProvider = "loginData",dataProviderClass = TestDataProvider.class)
     public void test(String username,String password){
         LoginPage loginPage=new LoginPage(driver);
         loginPage.login(username,password);

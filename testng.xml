@@ -12,6 +12,13 @@
     </listeners>
 
     <test name="OpenCart Tests">
+                 <groups>
+                    <run>
+                        <include name="smoke"/>
+                        <include name="sanity"/>
+                        <include name="regression"/>
+                    </run>
+                </groups>
 
         <classes>
             <class name="com.opencart.automation.tests.LoginPageTest"/>
