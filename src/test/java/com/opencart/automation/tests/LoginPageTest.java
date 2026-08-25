@@ -14,5 +14,6 @@ public class LoginPageTest extends BaseTest {
         LoginPage loginPage=new LoginPage(driver);
         HomePage homePage=loginPage.login(ConfigLoader.getProperty("username"),ConfigLoader.getProperty("password"));
         Assert.assertTrue(homePage.isMyAccountDisplayed(),"not displayed");
+
     }
 }
