@@ -58,23 +58,41 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
-        WebDriver driver = ((BaseTest)result.getInstance()).getDriver();
 
-        TakesScreenshot ts = (TakesScreenshot)driver;
-        File src=ts.getScreenshotAs(OutputType.FILE);
-        File des=new File("test-output/screenshots/"+result.getName()+".png");
-        try {
-            FileUtils.copyFile(src,des);
-            extentTest.get().addScreenCaptureFromPath(
-                    des.getPath());
-        } catch (IOException e) {
-            logger.error("unable to capture screenshot");
+        WebDriver driver =
+                ((BaseTest) result.getInstance()).getDriver();
+
+        if (driver != null) {
+
+            TakesScreenshot ts = (TakesScreenshot) driver;
+
+            File src = ts.getScreenshotAs(OutputType.FILE);
+
+            File des = new File(
+                    "test-output/screenshots/"
+                            + result.getName()
+                            + ".png"
+            );
+
+            try {
+                FileUtils.copyFile(src, des);
+
+                extentTest.get().addScreenCaptureFromPath(
+                        des.getPath()
+                );
+
+            } catch (IOException e) {
+                logger.error("Unable to capture screenshot", e);
+            }
+
+        } else {
+
+            logger.error(
+                    "WebDriver is null. Screenshot cannot be captured."
+            );
         }
 
-
-        extentTest.get().fail(
-                result.getThrowable()
-        );
+        extentTest.get().fail(result.getThrowable());
 
         logger.error(
                 "TEST FAILED: {}",
