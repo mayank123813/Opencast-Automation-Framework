@@ -22,7 +22,7 @@ public class WebDriverFactory {
         if (type.equalsIgnoreCase("chrome")) {
 
             ChromeOptions options = new ChromeOptions();
-
+            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-gpu");
@@ -37,7 +37,9 @@ public class WebDriverFactory {
         }
 
         if (type.equalsIgnoreCase("firefox")) {
+
             FirefoxOptions options = new FirefoxOptions();
+            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-gpu");
@@ -52,7 +54,7 @@ public class WebDriverFactory {
         if (type.equalsIgnoreCase("edge")) {
 
             EdgeOptions options = new EdgeOptions();
-
+            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-gpu");
