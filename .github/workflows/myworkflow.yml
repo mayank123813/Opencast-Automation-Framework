@@ -1,187 +1,35 @@
-name: OpenCart Automation Tests
+name: Selenium Java Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+
   pull_request:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
-  automation-test:
+  selenium-tests:
     runs-on: ubuntu-latest
 
-    services:
-      mariadb:
-        image: mariadb:10.4
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: opencart
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mariadb-admin ping -h 127.0.0.1 -uroot -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: '17'
-          cache: maven
+          java-version: "21"
+          distribution: "temurin"
 
-      - name: Verify Java and Maven
-        run: |
-          java -version
-          mvn -version
-          google-chrome --version
+      - name: Set up Maven
+        run: mvn -version
 
-      - name: Install Apache2 and PHP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            apache2 \
-            libapache2-mod-php \
-            php \
-            php-mysql \
-            php-curl \
-            php-gd \
-            php-mbstring \
-            php-xml \
-            php-zip
-          echo "Apache and PHP installed successfully"
+      - name: Run TestNG Suite
+        run: mvn clean test -DsuiteXmlFile=testng.xml
 
-      - name: Enable Apache modules
-        run: |
-          sudo a2enmod rewrite
-          sudo a2enmod php8.1
-          echo "Apache modules enabled"
-
-      - name: Deploy OpenCart to Apache
-        run: |
-          # Remove default Apache content
-          sudo rm -rf /var/www/html/*
-          
-          # Copy OpenCart files to Apache root
-          sudo cp -R . /var/www/html/opencart
-          
-          # Set correct permissions
-          sudo chown -R www-data:www-data /var/www/html/opencart
-          sudo chmod -R 755 /var/www/html/opencart
-          
-          # Create writable directories
-          sudo mkdir -p /var/www/html/opencart/system/storage/logs
-          sudo mkdir -p /var/www/html/opencart/system/storage/cache
-          sudo mkdir -p /var/www/html/opencart/image/catalog
-          
-          sudo chown -R www-data:www-data /var/www/html/opencart/system/storage
-          sudo chown -R www-data:www-data /var/www/html/opencart/image
-          
-          echo "OpenCart deployed successfully"
-
-      - name: Restart Apache
-        run: |
-          sudo systemctl restart apache2
-          sleep 5
-          echo "Apache restarted"
-
-      - name: Verify Apache is running
-        run: |
-          sudo systemctl status apache2
-          curl -I http://127.0.0.1/opencart/ || echo "Initial curl check"
-
-      - name: Wait for MariaDB
-        run: |
-          for i in {1..30}; do
-            if docker exec "${{ job.services.mariadb.id }}" \
-              mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent; then
-              echo "MariaDB is ready!"
-              break
-            fi
-          
-            if [ "$i" -eq 30 ]; then
-              echo "MariaDB did not become ready in time."
-              exit 1
-            fi
-          
-            echo "Waiting for MariaDB..."
-            sleep 2
-          done
-
-      - name: Initialize OpenCart database
-        run: |
-          docker exec -i "${{ job.services.mariadb.id }}" \
-            mariadb -uroot -proot opencart < db/opencart.sql
-          echo "Database initialized successfully"
-
-      - name: Verify database
-        run: |
-          docker exec "${{ job.services.mariadb.id }}" \
-            mariadb -uroot -proot opencart \
-            -e "SHOW TABLES;"
-
-      - name: Wait for OpenCart to be accessible
-        run: |
-          for i in {1..30}; do
-            if curl -s -f http://127.0.0.1/opencart/mayankadmin/ > /dev/null; then
-              echo "OpenCart admin panel is accessible!"
-              break
-            fi
-          
-            if [ "$i" -eq 30 ]; then
-              echo "OpenCart admin panel did not become accessible in time."
-              sudo tail -100 /var/log/apache2/error.log
-              exit 1
-            fi
-          
-            echo "Waiting for OpenCart (attempt $i/30)..."
-            sleep 2
-          done
-
-      - name: Verify OpenCart connectivity
-        run: |
-          echo "Testing OpenCart connectivity..."
-          curl -v http://127.0.0.1/opencart/mayankadmin/ || true
-          echo ""
-          echo "Testing database connectivity..."
-          docker exec "${{ job.services.mariadb.id }}" \
-            mariadb -uroot -proot opencart -e "SELECT 1;" || true
-
-      - name: Run automation tests
-        env:
-          CI: true
-          DB_URL: jdbc:mariadb://127.0.0.1:3306/opencart
-          DB_USER: root
-          DB_PASSWORD: root
-        run: |
-          mvn clean test
-
-      - name: Upload TestNG/Extent reports
+      - name: Upload TestNG Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: automation-test-reports
-          path: |
-            test-output/
-            target/surefire-reports/
-            reports/
-          if-no-files-found: warn
-
-      - name: Collect logs on failure
-        if: failure()
-        run: |
-          echo "=== Apache Error Log ===" 
-          sudo tail -50 /var/log/apache2/error.log || true
-          echo "=== Apache Access Log ===" 
-          sudo tail -50 /var/log/apache2/access.log || true
-          echo "=== Apache Status ===" 
-          sudo systemctl status apache2 || true
-          echo "=== PHP Info ===" 
-          php -v || true
+          name: TestNG-Reports
+          path: target/surefire-reports
