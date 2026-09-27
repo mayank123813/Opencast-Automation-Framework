@@ -23,24 +23,29 @@ public class WebDriverFactory {
 
             ChromeOptions options = new ChromeOptions();
 
-            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--start-maximized");
+            options.addArguments("--disable-blink-features=AutomationControlled");
+            options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+            options.setExperimentalOption("useAutomationExtension", false);
 
             logger.info("Starting Chrome browser");
-            return new ChromeDriver();
+            return new ChromeDriver(options);
 
         }
 
         if (type.equalsIgnoreCase("firefox")) {
             FirefoxOptions options = new FirefoxOptions();
-
-            options.addArguments("-headless");
-            options.addArguments("--width=1920");
-            options.addArguments("--height=1080");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--start-maximized");
+            options.addArguments("--disable-blink-features=AutomationControlled");
 
             logger.info("Starting Firefox browser");
-            return new FirefoxDriver();
+            return new FirefoxDriver(options);
 
         }
 
@@ -48,12 +53,16 @@ public class WebDriverFactory {
 
             EdgeOptions options = new EdgeOptions();
 
-            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--start-maximized");
+            options.addArguments("--disable-blink-features=AutomationControlled");
+            options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+            options.setExperimentalOption("useAutomationExtension", false);
 
             logger.info("Starting Edge browser");
-            return new EdgeDriver();
+            return new EdgeDriver(options);
 
         }
 
