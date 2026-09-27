@@ -1,31 +1,104 @@
-name: Selenium Java Tests
+name: OpenCart Automation Tests
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
-  selenium-tests:
+  automation-test:
+
     runs-on: ubuntu-latest
 
+    services:
+      mariadb:
+        image: mariadb:10.4
+
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: opencart
+
+        ports:
+          - 3306:3306
+
+        options: >-
+          --health-cmd="mariadb-admin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
-      - name: Checkout code
+
+      # 1. Download your GitHub repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+
+      # 2. Install Java 17
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
+          cache: maven
 
-      - name: Run tests
-        run: mvn clean test
 
-      - name: Upload TestNG reports
+      # 3. Check Java and Maven
+      - name: Verify Java and Maven
+        run: |
+          java -version
+          mvn -version
+
+
+      # 4. Wait for MariaDB
+      - name: Wait for MariaDB
+        run: |
+          for i in {1..30}; do
+            if docker exec ${{ job.services.mariadb.id }} \
+              mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MariaDB is ready!"
+              break
+            fi
+            echo "Waiting for MariaDB..."
+            sleep 2
+          done
+
+
+      # 5. Import OpenCart database
+      - name: Initialize OpenCart database
+        run: |
+          docker exec -i ${{ job.services.mariadb.id }} \
+            mariadb -uroot -proot opencart < db/opencart.sql
+
+
+      # 6. Verify database
+      - name: Verify database
+        run: |
+          docker exec ${{ job.services.mariadb.id }} \
+            mariadb -uroot -proot opencart \
+            -e "SHOW TABLES;"
+
+
+      # 7. Run Selenium/TestNG tests
+      - name: Run automation tests
+        env:
+          DB_URL: jdbc:mariadb://127.0.0.1:3306/opencart
+          DB_USER: root
+          DB_PASSWORD: root
+        run: |
+          mvn clean test
+
+
+      # 8. Upload TestNG/Extent reports
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: testng-reports
-          path: target/surefire-reports
+          name: automation-test-reports
+          path: |
+            test-output/
+            target/surefire-reports/
+            reports/
