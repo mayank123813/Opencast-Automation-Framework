@@ -11,11 +11,18 @@ public class DbUtils {
             LogManager.getLogger(DbUtils.class);
 
     private static final String URL =
-            "jdbc:mariadb://localhost:3306/opencart";
+            System.getenv()
+                    .getOrDefault(
+                            "DB_URL",
+                            "jdbc:mariadb://localhost:3306/opencart"
+                    );
 
-    private static final String USERNAME = "root";
+    private static final String USERNAME = System.getenv()
+            .getOrDefault("DB_USER", "root");
 
-    private static final String PASSWORD = "";
+    private static final String PASSWORD =  System.getenv()
+            .getOrDefault("DB_PASSWORD", "root");
+    ;
 
     public static String getProductName(int productId)
             throws SQLException {

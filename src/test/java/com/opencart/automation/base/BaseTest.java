@@ -18,7 +18,7 @@ public class BaseTest {
         return driver;
     }
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void setup() {
 
         logger.info("Starting browser setup");
@@ -38,7 +38,7 @@ public class BaseTest {
         logger.info("Navigated to OpenCart application");
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDown() {
 
         if (driver != null) {
