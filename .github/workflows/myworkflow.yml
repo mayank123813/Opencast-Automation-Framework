@@ -3,6 +3,7 @@ name: Selenium Java Tests
 on:
   push:
     branches: ["main"]
+
   pull_request:
     branches: ["main"]
 
@@ -159,5 +160,19 @@ jobs:
           sudo a2ensite opencart.conf
           sudo a2enmod rewrite
           sudo apache2ctl configtest
-          sudo system*
-
+          sudo systemctl restart apache2
+
+      - name: Verify Apache
+        run: |
+          curl -I http://127.0.0.1/opencart/
+
+      - name: Run TestNG Suite
+        run: |
+          mvn clean test -DsuiteXmlFile=testng.xml
+
+      - name: Upload TestNG Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestNG-Reports
+          path: target/surefire-reports
